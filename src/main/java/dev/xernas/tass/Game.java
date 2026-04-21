@@ -8,17 +8,17 @@ import dev.xernas.hydrogen.ecs.SceneManager;
 import dev.xernas.hydrogen.ecs.module.CameraController;
 import dev.xernas.hydrogen.ecs.module.LightSource;
 import dev.xernas.hydrogen.ecs.module.RenderingModule;
-import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.hydrogen.rendering.material.ColorMaterial;
 import dev.xernas.photon.Library;
-import dev.xernas.photon.api.IRenderer;
 import dev.xernas.photon.api.Transform;
-import dev.xernas.photon.api.framebuffer.IFramebuffer;
-import dev.xernas.photon.api.model.IMesh;
-import dev.xernas.photon.api.shader.IShader;
-import dev.xernas.photon.api.texture.ITexture;
 import dev.xernas.photon.api.window.Window;
 import dev.xernas.photon.utils.Models;
+import dev.xernas.tass.gameplay.BodyInstantiator;
+import dev.xernas.tass.gameplay.bodies.AstralBody;
+import dev.xernas.tass.gameplay.bodies.BodyType;
+import dev.xernas.tass.physics.Body;
+import dev.xernas.tass.physics.GravityTask;
+import dev.xernas.tass.physics.PhysicsTask;
 import org.joml.Vector3f;
 
 import java.awt.*;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game extends Application {
+
     @Override
     public Library getLibrary() {
         return Library.OPENGL_4_5;
@@ -58,36 +59,27 @@ public class Game extends Application {
 
     @Override
     public void onStartup() {
-        Body sun = new Body(3000, 20);
-
-        Scene mainScene = SceneManager.newScene("MainScene")
-                .addActor(new Actor("Camera", new Transform.CameraTransform(), new CameraController(10f)))
-                .addActor(new Actor("SceneManager", new SceneActor()));
+        Scene mainScene = SceneManager.newScene("MainScene");
         mainScene.set3D(true);
 
         List<Body> allBodies = new ArrayList<>();
-        allBodies.add(sun);
 
-        mainScene.addActor(new Actor(
-                "Sun",
-                new RenderingModule("default", Models.createCube(), new ColorMaterial(Color.YELLOW)),
-                sun,
-                new LightSource(1f))
-        );
+        AstralBody blackHole = new AstralBody(BodyType.BLACK_HOLE, 10000f, new Vector3f(), new Vector3f());
+        allBodies.add(blackHole.getBody());
 
-        for (int i = 0; i < 200; i++) {
-            Body planet = new Body(20, 5);
-            mainScene.addActor(new Actor(
-                    new Transform(new Vector3f((float) (Math.random() * 500 - 500), (float) (Math.random() * 500 - 500), (float) (Math.random() * 500 - 500))),
-                    new RenderingModule("lit", Models.createCube(), new ColorMaterial(Color.CYAN)),
-                    planet
-            ));
-            allBodies.add(planet);
-        }
+        mainScene.newActor(blackHole);
+
+        mainScene.newActor(new Actor("Camera", new Transform.CameraTransform(), new CameraController(10f)))
+                .newActor(new Actor("SceneManager", new SceneModule(allBodies), new BodyInstantiator(allBodies)));
+
+
 
         // Gravity Stuff
-        PhysicsTask pt = new PhysicsTask(70f, allBodies);
+        PhysicsTask pt = new PhysicsTask(allBodies);
+        GravityTask gravityTask = new GravityTask(3f, allBodies);
+
         getTaskManager().newTask(pt);
+        getTaskManager().newTask(gravityTask);
     }
 
 }

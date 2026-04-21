@@ -1,7 +1,8 @@
-package dev.xernas.tass;
+package dev.xernas.tass.physics;
 
 import dev.xernas.hydrogen.ecs.Actor;
 import dev.xernas.hydrogen.ecs.module.Module;
+import dev.xernas.hydrogen.rendering.Renderer;
 import dev.xernas.photon.api.Transform;
 import dev.xernas.photon.api.window.Window;
 import org.joml.Vector3f;
@@ -22,7 +23,7 @@ public class Body extends Module {
     }
 
     @Override
-    public void onStart(Actor actor, Window window) {
+    public void onStart(Actor actor, Window window, Renderer renderer) {
         this.transform = actor.getTransform();
         transform.scale(radius);
         this.position = new Vector3f(transform.getPosition());

@@ -54,7 +54,7 @@ public class Game extends Application {
 
     @Override
     public AssetManager getAssetManager() {
-        return new AssetManager(this.getClass().getClassLoader(), "shaders");
+        return new AssetManager(this.getClass().getClassLoader(), "shaders", "textures");
     }
 
     @Override
@@ -69,14 +69,14 @@ public class Game extends Application {
 
         mainScene.newActor(blackHole);
 
-        mainScene.newActor(new Actor("Camera", new Transform.CameraTransform(), new CameraController(10f)))
+        mainScene.newActor(new Actor("Camera", new Transform.CameraTransform(), new CameraController(1f)))
                 .newActor(new Actor("SceneManager", new SceneModule(allBodies), new BodyInstantiator(allBodies)));
 
 
 
         // Gravity Stuff
         PhysicsTask pt = new PhysicsTask(allBodies);
-        GravityTask gravityTask = new GravityTask(3f, allBodies);
+        GravityTask gravityTask = new GravityTask(0.5f, allBodies);
 
         getTaskManager().newTask(pt);
         getTaskManager().newTask(gravityTask);

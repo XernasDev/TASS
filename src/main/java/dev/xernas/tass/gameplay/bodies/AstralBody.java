@@ -21,7 +21,7 @@ public class AstralBody extends Actor {
         body = new Body(mass, mass / type.getMassToRadiusRatio());
         RenderingModule renderingModule = new RenderingModule("default", Models.createCube(), new ColorMaterial(type.getMainColor()));
 
-        body.accelerate(defaultVelocity.mul(1000f));
+        body.accelerate(defaultVelocity.mul(100f));
 
         newModules(body, renderingModule);
     }

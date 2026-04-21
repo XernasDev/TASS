@@ -19,7 +19,7 @@ public class Body extends Module {
 
     public Body(float mass, float radius) {
         this.mass = mass;
-        this.radius = radius;
+        this.radius = radius / 10f;
     }
 
     @Override
